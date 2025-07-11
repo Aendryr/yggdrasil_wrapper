@@ -55,3 +55,40 @@ Due to permission elevation and networking constraints, Godot cannot directly la
 ## 🧪 Roadmap / Ideas
 Open a TCP socket so Godot can communicate directly with the wrapper
 Add better error messages and configuration feedback
+
+## Godot Example
+extends Node
+
+var pid := 0
+var ipv6_addr:String="";
+var dirpath
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		if pid:
+			OS.kill(pid)
+
+func _ready() -> void:
+	#Use absolute path in editor for testing
+	dirpath=OS.get_executable_path().get_base_dir()
+   var wrapper_path = dirpath + "/mp_extender.exe"
+	var pid_output = []
+	var code = OS.execute(wrapper_path, [], pid_output)
+	if code == 0:
+		pid = int(pid_output[0])
+	wait_and_read_log()
+
+
+func _exit_tree():
+	if pid:
+		OS.kill(pid)
+
+
+func wait_and_read_log():
+	await get_tree().create_timer(10.0).timeout  # wait a few seconds
+	var log_file = dirpath + "/yggdrasil_ipv6.txt"
+	var f = FileAccess.open(log_file, FileAccess.READ)
+	if f:
+		ipv6_addr = f.get_as_text()
+		print(ipv6_addr)

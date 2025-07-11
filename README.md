@@ -56,13 +56,14 @@ Due to permission elevation and networking constraints, Godot cannot directly la
 Open a TCP socket so Godot can communicate directly with the wrapper
 Add better error messages and configuration feedback
 
+---
 ## Godot Example
+```
 extends Node
 
 var pid := 0
 var ipv6_addr:String="";
 var dirpath
-
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
@@ -92,3 +93,4 @@ func wait_and_read_log():
 	if f:
 		ipv6_addr = f.get_as_text()
 		print(ipv6_addr)
+```
